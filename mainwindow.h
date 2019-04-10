@@ -23,6 +23,7 @@ private:
     Ui::MainWindow *ui;
     std::vector<std::pair<double, double>> realFunc;
     std::vector<std::pair<double, double>> generateFunc(double, double);
+    void setSpinBoxBoundaries(double, double);
     void setFuncText(std::vector<std::pair<double, double>>);
     double interpolate(double);
     std::function<double(double)> getLagrangePolynomial(size_t, size_t);
