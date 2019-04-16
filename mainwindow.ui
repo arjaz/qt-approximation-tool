@@ -156,6 +156,9 @@
     <item row="0" column="1">
      <widget class="QChartView" name="graphicsView"/>
     </item>
+    <item row="0" column="2">
+     <widget class="QChartView" name="graphicsViewError"/>
+    </item>
    </layout>
   </widget>
   <widget class="QMenuBar" name="menuBar">

@@ -46,6 +46,7 @@ public:
     QLabel *label;
     QSpacerItem *verticalSpacer;
     QChartView *graphicsView;
+    QChartView *graphicsViewError;
     QMenuBar *menuBar;
     QToolBar *mainToolBar;
     QStatusBar *statusBar;
@@ -146,6 +147,11 @@ public:
 
         gridLayout_2->addWidget(graphicsView, 0, 1, 1, 1);
 
+        graphicsViewError = new QChartView(centralWidget);
+        graphicsViewError->setObjectName(QString::fromUtf8("graphicsViewError"));
+
+        gridLayout_2->addWidget(graphicsViewError, 0, 2, 1, 1);
+
         MainWindow->setCentralWidget(centralWidget);
         menuBar = new QMenuBar(MainWindow);
         menuBar->setObjectName(QString::fromUtf8("menuBar"));
@@ -177,7 +183,7 @@ public:
         comboBox->setItemText(5, QApplication::translate("MainWindow", "exp(x)", nullptr));
         comboBox->setItemText(6, QApplication::translate("MainWindow", "exp(x) / x", nullptr));
 
-        pushButton_polynomial->setText(QApplication::translate("MainWindow", "Polynomial", nullptr));
+        pushButton_polynomial->setText(QApplication::translate("MainWindow", "Approximate", nullptr));
         label_polynomial_f->setText(QString());
         label->setText(QApplication::translate("MainWindow", "Number of points", nullptr));
     } // retranslateUi

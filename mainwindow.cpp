@@ -132,15 +132,23 @@ void MainWindow::plot() {
     QChart *chart = new QChart();
     chart->addSeries(seriesFunc);
     chart->addSeries(seriesApprox);
-    chart->addSeries(seriesError);
     chart->legend()->show();
-
     chart->createDefaultAxes();
     chart->setAnimationOptions(QChart::AllAnimations);
-    chart->setTitle("Function, its approximation and error");
+    chart->setTitle("Function and its approximation");
+
+    QChart *chartError = new QChart();
+    chartError->addSeries(seriesError);
+    chartError->legend()->hide();
+    chartError->createDefaultAxes();
+    chartError->setAnimationOptions(QChart::AllAnimations);
+    chartError->setTitle("Error function");
 
     ui->graphicsView->setChart(chart);
     ui->graphicsView->setRenderHint(QPainter::Antialiasing);
+
+    ui->graphicsViewError->setChart(chartError);
+    ui->graphicsViewError->setRenderHint(QPainter::Antialiasing);
 }
 
 void MainWindow::on_comboBox_currentIndexChanged(int index) {
