@@ -21,10 +21,13 @@ private slots:
 
 private:
     Ui::MainWindow *ui;
+    std::function<double(double)> func;
+    std::pair<double, double> range;
     std::vector<std::pair<double, double>> realFunc;
     std::vector<std::pair<double, double>> generateFunc(double, double);
+    void polynomial();
+    void plot();
     void setSpinBoxBoundaries(double, double);
-    void setFuncText(std::vector<std::pair<double, double>>);
     double interpolate(double);
     std::function<double(double)> getLagrangePolynomial(size_t, size_t);
 };
