@@ -74,7 +74,7 @@
       <item row="4" column="1">
        <widget class="QDoubleSpinBox" name="doubleSpinBoxMinRange">
         <property name="maximum">
-         <double>25.000000000000000</double>
+         <double>1.000000000000000</double>
         </property>
        </widget>
       </item>

@@ -97,11 +97,7 @@ std::function<double(double)> MainWindow::getLagrangePolynomial(size_t i0, size_
 }
 
 void MainWindow::on_pushButton_polynomial_clicked(){
-    if (ui->doubleSpinBoxMinRange->value() > ui->doubleSpinBoxMaxRange->value()) {
-        auto tmp = ui->doubleSpinBoxMinRange->value();
-        ui->doubleSpinBoxMinRange->setValue(ui->doubleSpinBoxMaxRange->value());
-        ui->doubleSpinBoxMaxRange->setValue(tmp);
-    } else if (ui->doubleSpinBoxMinRange->value() == ui->doubleSpinBoxMaxRange->value()) {
+    if (ui->doubleSpinBoxMinRange->value() == ui->doubleSpinBoxMaxRange->value()) {
         ui->doubleSpinBoxMaxRange->setValue(ui->doubleSpinBoxMinRange->value() + 1);
     }
     this->range = std::make_pair(ui->doubleSpinBoxMinRange->value(), ui->doubleSpinBoxMaxRange->value());
@@ -193,4 +189,14 @@ void MainWindow::on_comboBox_currentIndexChanged(int index) {
                 return cos(x) * cos(x);
             };
     }
+}
+
+void MainWindow::on_doubleSpinBoxMaxRange_valueChanged(double arg1) {
+    ui->doubleSpinBoxMinRange->setMaximum(arg1);
+    ui->doubleSpinBoxPol->setMaximum(arg1);
+}
+
+void MainWindow::on_doubleSpinBoxMinRange_valueChanged(double arg1) {
+    ui->doubleSpinBoxMaxRange->setMinimum(arg1);
+    ui->doubleSpinBoxPol->setMinimum(arg1);
 }

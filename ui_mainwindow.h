@@ -104,7 +104,7 @@ public:
 
         doubleSpinBoxMinRange = new QDoubleSpinBox(centralWidget);
         doubleSpinBoxMinRange->setObjectName(QString::fromUtf8("doubleSpinBoxMinRange"));
-        doubleSpinBoxMinRange->setMaximum(25.000000000000000);
+        doubleSpinBoxMinRange->setMaximum(1.000000000000000);
 
         gridLayout->addWidget(doubleSpinBoxMinRange, 4, 1, 1, 1);
 

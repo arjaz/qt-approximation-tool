@@ -18,8 +18,9 @@ public:
 
 private slots:
     void on_pushButton_polynomial_clicked();
-
     void on_comboBox_currentIndexChanged(int index);
+    void on_doubleSpinBoxMaxRange_valueChanged(double arg1);
+    void on_doubleSpinBoxMinRange_valueChanged(double arg1);
 
 private:
     Ui::MainWindow *ui;
