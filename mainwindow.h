@@ -19,13 +19,14 @@ public:
 private slots:
     void on_pushButton_polynomial_clicked();
 
+    void on_comboBox_currentIndexChanged(int index);
+
 private:
     Ui::MainWindow *ui;
     std::function<double(double)> func;
     std::pair<double, double> range;
     std::vector<std::pair<double, double>> realFunc;
     std::vector<std::pair<double, double>> generateFunc(double, double);
-    void polynomial();
     void plot();
     void setSpinBoxBoundaries(double, double);
     double interpolate(double);

@@ -11,7 +11,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     ui->setupUi(this);
     this->func = [](double x) {
-        return pow(cos(x), 2);
+        return cos(x) * cos(x);
     };
 }
 
@@ -24,12 +24,12 @@ void MainWindow::setSpinBoxBoundaries(double min, double max) {
     ui->doubleSpinBoxPol->setMaximum(max);
 }
 
-// Generates a vector of 10 <double, double> pairs using the formula with x from min to max
+// Generates a vector of 11 <double, double> pairs using the formula with x from min to max
 std::vector<std::pair<double, double>> MainWindow::generateFunc(double min, double max) {
-    double step = (max - min) / 10;
+    double step = (max - min) / ui->spinBoxApproxPoints->value();
     std::vector<std::pair<double, double>> funcVec;
 
-    for (int i = 0; i < 11; ++i) {
+    for (int i = 0; i < ui->spinBoxApproxPoints->value() + 1; ++i) {
         funcVec.push_back(std::make_pair(min + step * i, this->func(min + step * i)));
     }
 
@@ -109,38 +109,80 @@ void MainWindow::on_pushButton_polynomial_clicked(){
     this->realFunc = generateFunc(this->range.first, this->range.second);
     setSpinBoxBoundaries(this->realFunc[0].first, this->realFunc.back().first);
 
-    /* ui->label_real_f->setText(); */
+    ui->label_real_f->setText(QString::number(this->func(ui->doubleSpinBoxPol->value()), 'f', 3));
     ui->label_polynomial_f->setText(QString::number(interpolate(ui->doubleSpinBoxPol->value()), 'f', 3));
-
-    /* setFuncText(this->realFunc); */
-    /* this->polynomial(); */
     this->plot();
 }
 
-void MainWindow::polynomial() {
-    double resPol = interpolate(ui->doubleSpinBoxPol->value());
-    QString res = "value for [" + QString::number(ui->doubleSpinBoxPol->value(), 'f', 3) + "] is [" + QString::number(resPol, 'f', 3) + "]";
-
-    ui->label_polynomial_f->setText(res);
-}
-
 void MainWindow::plot() {
-    QLineSeries *series1 = new QLineSeries();
-    QLineSeries *series2 = new QLineSeries();
+    QLineSeries *seriesFunc = new QLineSeries(this);
+    QLineSeries *seriesApprox = new QLineSeries(this);
+    QLineSeries *seriesError = new QLineSeries(this);
+
+    seriesFunc->setName("Function");
+    seriesApprox->setName("Approximation");
+    seriesError->setName("Error");
 
     for (float i = this->range.first; i <= this->range.second; i += (this->range.second - this->range.first) / 100) {
-        series1->append(i, this->func(i));
-        series2->append(i, interpolate(i));
+        seriesFunc->append(i, this->func(i));
+        seriesApprox->append(i, interpolate(i));
+        seriesError->append(i, abs(this->func(i) - interpolate(i)));
     }
 
     QChart *chart = new QChart();
+    chart->addSeries(seriesFunc);
+    chart->addSeries(seriesApprox);
+    chart->addSeries(seriesError);
     chart->legend()->show();
-    chart->addSeries(series1);
-    chart->addSeries(series2);
+
     chart->createDefaultAxes();
     chart->setAnimationOptions(QChart::AllAnimations);
-    chart->setTitle("Function and its approximation");
+    chart->setTitle("Function, its approximation and error");
 
     ui->graphicsView->setChart(chart);
     ui->graphicsView->setRenderHint(QPainter::Antialiasing);
+}
+
+void MainWindow::on_comboBox_currentIndexChanged(int index) {
+    switch (index) {
+        case 0:
+            this->func = [](double x) {
+                return cos(x) * cos(x);
+            };
+            break;
+        case 1:
+            this->func = [](double x) {
+                return x * x;
+            };
+            break;
+        case 2:
+            this->func = [](double x) {
+                return sin(x);
+            };
+            break;
+        case 3:
+            this->func = [](double x) {
+                return log(x);
+            };
+            break;
+        case 4:
+            this->func = [](double x) {
+                return x * sin(x);
+            };
+            break;
+        case 5:
+            this->func = [](double x) {
+                return exp(x);
+            };
+            break;
+        case 6:
+            this->func = [](double x) {
+                return exp(x) / x;
+            };
+            break;
+        default:
+            this->func = [](double x) {
+                return cos(x) * cos(x);
+            };
+    }
 }
