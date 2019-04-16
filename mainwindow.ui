@@ -120,7 +120,7 @@
       <item row="5" column="0">
        <widget class="QPushButton" name="pushButton_polynomial">
         <property name="text">
-         <string>Polynomial</string>
+         <string>Approximate</string>
         </property>
        </widget>
       </item>
