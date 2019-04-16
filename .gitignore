@@ -2,3 +2,4 @@ approximation
 *.o
 moc*
 .qmake.stash
+Makefile
