@@ -24,7 +24,7 @@ void MainWindow::setSpinBoxBoundaries(double min, double max) {
     ui->doubleSpinBoxPol->setMaximum(max);
 }
 
-// Generates a vector of 11 <double, double> pairs using the formula with x from min to max
+// Generates a vector of <double, double> pairs using the formula with x from min to max
 std::vector<std::pair<double, double>> MainWindow::generateFunc(double min, double max) {
     double step = (max - min) / ui->spinBoxApproxPoints->value();
     std::vector<std::pair<double, double>> funcVec;
@@ -84,11 +84,6 @@ std::function<double(double)> MainWindow::getLagrangePolynomial(size_t i0, size_
         return [=](double) {
             return func[i0].second;
         };
-    }
-    if (i0 + 1 == i1) {
-        return [=](double x) {
-            return 1.0 / (func[i1].first - func[i0].first) * ((x - func[i0].first) * func[i1].second - (x - func[i1].first) * func[i0].second);
-        };
     } else {
         return [=](double x) {
             return 1.0 / (func[i1].first - func[i0].first) * ((x - func[i0].first) * getLagrangePolynomial(i0 + 1, i1)(x) - (x - func[i1].first) * getLagrangePolynomial(i0, i1 - 1)(x));
@@ -120,9 +115,12 @@ void MainWindow::plot() {
     seriesError->setName("Error");
 
     for (float i = this->range.first; i <= this->range.second; i += (this->range.second - this->range.first) / 100) {
-        seriesFunc->append(i, this->func(i));
-        seriesApprox->append(i, interpolate(i));
-        seriesError->append(i, abs(this->func(i) - interpolate(i)));
+        auto f = this->func(i);
+        auto a = interpolate(i);
+        auto e = abs(f - a);
+        seriesFunc->append(i, f);
+        seriesApprox->append(i, a);
+        seriesError->append(i, e);
     }
 
     QChart *chart = new QChart();

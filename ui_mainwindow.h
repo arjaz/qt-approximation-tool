@@ -173,7 +173,7 @@ public:
     {
         MainWindow->setWindowTitle(QApplication::translate("MainWindow", "MainWindow", nullptr));
         label_real_f->setText(QString());
-        label_polynomial->setText(QApplication::translate("MainWindow", "Polynomial:", nullptr));
+        label_polynomial->setText(QApplication::translate("MainWindow", "Approximation:", nullptr));
         label_2->setText(QApplication::translate("MainWindow", "Range", nullptr));
         comboBox->setItemText(0, QApplication::translate("MainWindow", "cos(x)^2", nullptr));
         comboBox->setItemText(1, QApplication::translate("MainWindow", "x^2", nullptr));

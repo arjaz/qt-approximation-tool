@@ -27,7 +27,7 @@
       <item row="2" column="0">
        <widget class="QLabel" name="label_polynomial">
         <property name="text">
-         <string>Polynomial:</string>
+         <string>Approximation:</string>
         </property>
        </widget>
       </item>
