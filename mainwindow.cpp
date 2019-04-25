@@ -2,6 +2,9 @@
 #include "ui_mainwindow.h"
 
 #include <cmath>
+#include <functional>
+#include <vector>
+#include <utility>
 
 #include <QtCharts/QChartView>
 #include <QtCharts/QLineSeries>
@@ -19,18 +22,14 @@ MainWindow::~MainWindow() {
     delete ui;
 }
 
-void MainWindow::setSpinBoxBoundaries(double min, double max) {
-    ui->doubleSpinBoxPol->setMinimum(min);
-    ui->doubleSpinBoxPol->setMaximum(max);
-}
-
 // Generates a vector of <double, double> pairs using the formula with x from min to max
-std::vector<std::pair<double, double>> MainWindow::generateFunc(double min, double max) {
-    double step = (max - min) / ui->spinBoxApproxPoints->value();
+std::vector<std::pair<double, double>> MainWindow::generateFunc(std::pair<double, double> range) {
+    auto [from, to] = range;
+    double step = (to - from) / ui->spinBoxApproxPoints->value();
     std::vector<std::pair<double, double>> funcVec;
 
     for (int i = 0; i < ui->spinBoxApproxPoints->value() + 1; ++i) {
-        funcVec.push_back(std::make_pair(min + step * i, func(min + step * i)));
+        funcVec.push_back(std::make_pair(from + step * i, func(from + step * i)));
     }
 
     return funcVec;
@@ -119,8 +118,9 @@ void MainWindow::on_pushButton_polynomial_clicked(){
     }
     range = std::make_pair(ui->doubleSpinBoxMinRange->value(), ui->doubleSpinBoxMaxRange->value());
 
-    realFunc = generateFunc(range.first, range.second);
-    setSpinBoxBoundaries(realFunc.at(0).first, realFunc.back().first);
+    realFunc = generateFunc(range);
+    ui->doubleSpinBoxPol->setMinimum(min);
+    ui->doubleSpinBoxPol->setMaximum(max);
 
     ui->label_real_f->setText(QString::number(func(ui->doubleSpinBoxPol->value()), 'f', 3));
     ui->label_polynomial_f->setText(QString::number(interpolate(ui->doubleSpinBoxPol->value()), 'f', 3));

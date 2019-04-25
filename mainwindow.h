@@ -2,6 +2,8 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include <utility>
+#include <vector>
 #include <functional>
 
 namespace Ui {
@@ -27,9 +29,8 @@ private:
     std::function<double(double)> func;
     std::pair<double, double> range;
     std::vector<std::pair<double, double>> realFunc;
-    std::vector<std::pair<double, double>> generateFunc(double, double);
+    std::vector<std::pair<double, double>> generateFunc(std::pair<double, double>);
     void plot();
-    void setSpinBoxBoundaries(double, double);
     double interpolate(double);
     std::function<double(double)> getLagrangePolynomial(std::pair<size_t, size_t>);
 };
