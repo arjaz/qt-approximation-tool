@@ -5,6 +5,7 @@
 #include <functional>
 #include <vector>
 #include <utility>
+#include <exception>
 
 #include <QtCharts/QChartView>
 #include <QtCharts/QLineSeries>
@@ -23,13 +24,16 @@ MainWindow::~MainWindow() {
 }
 
 // Generates a vector of <double, double> pairs using the formula with x from min to max
-std::vector<std::pair<double, double>> MainWindow::generateFunc(std::pair<double, double> range) {
+std::vector<std::pair<double, double>> MainWindow::generateFunction(std::function<double(double)> function, std::pair<double, double> range) {
+    if (range.first > range.second) {
+        throw std::invalid_argument("range.first must not be greater than range.second");
+    }
+
     auto [from, to] = range;
-    double step = (to - from) / ui->spinBoxApproxPoints->value();
     std::vector<std::pair<double, double>> funcVec;
 
-    for (int i = 0; i < ui->spinBoxApproxPoints->value() + 1; ++i) {
-        funcVec.push_back(std::make_pair(from + step * i, func(from + step * i)));
+    for (double i = from; i <= to; i += (to - from) / (ui->spinBoxApproxIntervals->value())) {
+        funcVec.push_back(std::make_pair(i, function(i)));
     }
 
     return funcVec;
@@ -38,15 +42,15 @@ std::vector<std::pair<double, double>> MainWindow::generateFunc(std::pair<double
 // Returns an interpolated value for x
 // TODO: caching
 double MainWindow::interpolate(double x) {
-    if (x <= realFunc.front().first) {
-        return realFunc.front().second;
+    if (x <= functionValues.front().first) {
+        return functionValues.front().second;
     }
-    if (x >= realFunc.back().first) {
-        return realFunc.back().second;
+    if (x >= functionValues.back().first) {
+        return functionValues.back().second;
     }
 
     std::vector<double> xs;
-    std::transform(realFunc.begin(), realFunc.end(), std::back_inserter(xs),
+    std::transform(functionValues.begin(), functionValues.end(), std::back_inserter(xs),
         [](const std::pair<double, double> &p) {
             return p.first;
         }
@@ -60,13 +64,13 @@ double MainWindow::interpolate(double x) {
 
     double result = 0;
 
-    double oldPolynomial = realFunc.at(fromPol).second;
+    double oldPolynomial = functionValues.at(fromPol).second;
     double curPolynomial = getLagrangePolynomial(std::make_pair(fromPol, toPol))(x);
 
     double curDistance = abs(curPolynomial - oldPolynomial);
     double oldDistance = curDistance + 1;
 
-    while (oldDistance > curDistance && toPol <= realFunc.size() - 1) {
+    while (oldDistance > curDistance && toPol <= functionValues.size() - 1) {
         oldPolynomial = curPolynomial;
         curPolynomial = getLagrangePolynomial(std::make_pair(fromPol, toPol))(x);
 
@@ -80,23 +84,23 @@ double MainWindow::interpolate(double x) {
     return result;
 }
 
-// Returns Lagrange Polynomial function between points i and j using values stored in realFunc
-// TODO: checking realFunc vector's changes withoup copying
+// Returns Lagrange Polynomial function between points i and j using values stored in functionValues
+// TODO: checking functionValues vector's changes withoup copying
 std::function<double(double)> MainWindow::getLagrangePolynomial(std::pair<size_t, size_t> range) {
+    if (range.first > range.second) {
+        throw std::invalid_argument("range.first must not be greater than range.second");
+    }
     static std::map<std::pair<size_t, size_t>, std::function<double(double)>> cache;
-    static auto realFuncBackup = realFunc;
-    if (realFuncBackup != realFunc) {
-        realFuncBackup = realFunc;
+    static auto functionValuesBackup = functionValues;
+    if (functionValuesBackup != functionValues) {
+        functionValuesBackup = functionValues;
         cache.clear();
     }
     if (cache.count(range) != 0) {
         return cache.at(range);
     }
     auto [i, j] = range;
-    if (i > j) {
-        std::swap(i, j);
-    }
-    auto const &func = realFunc;
+    auto const &func = functionValues;
     if (i == j) {
         auto result = [=](double) {
             return func.at(i).second;
@@ -116,18 +120,23 @@ void MainWindow::on_pushButton_polynomial_clicked(){
     if (ui->doubleSpinBoxMinRange->value() == ui->doubleSpinBoxMaxRange->value()) {
         ui->doubleSpinBoxMaxRange->setValue(ui->doubleSpinBoxMinRange->value() + 1);
     }
-    range = std::make_pair(ui->doubleSpinBoxMinRange->value(), ui->doubleSpinBoxMaxRange->value());
+    auto range = std::make_pair(ui->doubleSpinBoxMinRange->value(), ui->doubleSpinBoxMaxRange->value());
 
-    realFunc = generateFunc(range);
-    ui->doubleSpinBoxPol->setMinimum(min);
-    ui->doubleSpinBoxPol->setMaximum(max);
+    functionValues = generateFunction(func, range);
 
     ui->label_real_f->setText(QString::number(func(ui->doubleSpinBoxPol->value()), 'f', 3));
     ui->label_polynomial_f->setText(QString::number(interpolate(ui->doubleSpinBoxPol->value()), 'f', 3));
-    plot();
+
+    plot(range);
 }
 
-void MainWindow::plot() {
+void MainWindow::plot(std::pair<double, double> range) {
+    if (range.first > range.second) {
+        throw std::invalid_argument("range.first must not be greater than range.second");
+    }
+
+    auto [from, to] = range;
+
     QLineSeries *seriesFunc = new QLineSeries(this);
     QLineSeries *seriesApprox = new QLineSeries(this);
     QLineSeries *seriesError = new QLineSeries(this);
@@ -136,7 +145,7 @@ void MainWindow::plot() {
     seriesApprox->setName("Approximation");
     seriesError->setName("Error");
 
-    for (float i = range.first; i <= range.second; i += (range.second - range.first) / 100) {
+    for (double i = from; i <= to; i += (to - from) / 100) {
         auto f = func(i);
         auto a = interpolate(i);
         auto e = abs(f - a);

@@ -3,3 +3,4 @@ approximation
 moc*
 .qmake.stash
 Makefile
+ui_mainwindow.h

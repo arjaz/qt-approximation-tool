@@ -27,10 +27,9 @@ private slots:
 private:
     Ui::MainWindow *ui;
     std::function<double(double)> func;
-    std::pair<double, double> range;
-    std::vector<std::pair<double, double>> realFunc;
-    std::vector<std::pair<double, double>> generateFunc(std::pair<double, double>);
-    void plot();
+    std::vector<std::pair<double, double>> functionValues;
+    std::vector<std::pair<double, double>> generateFunction(std::function<double(double)>, std::pair<double, double>);
+    void plot(std::pair<double, double>);
     double interpolate(double);
     std::function<double(double)> getLagrangePolynomial(std::pair<size_t, size_t>);
 };
