@@ -62,14 +62,14 @@ double MainWindow::interpolate(double x) {
     double result = 0;
 
     double oldPolynomial = realFunc.at(fromPol).second;
-    double curPolynomial = getLagrangePolynomial(fromPol, toPol)(x);
+    double curPolynomial = getLagrangePolynomial(std::make_pair(fromPol, toPol))(x);
 
     double curDistance = abs(curPolynomial - oldPolynomial);
     double oldDistance = curDistance + 1;
 
     while (oldDistance > curDistance && toPol <= realFunc.size() - 1) {
         oldPolynomial = curPolynomial;
-        curPolynomial = getLagrangePolynomial(fromPol, toPol)(x);
+        curPolynomial = getLagrangePolynomial(std::make_pair(fromPol, toPol))(x);
 
         oldDistance = curDistance;
         curDistance = abs(curPolynomial - oldPolynomial);
@@ -81,22 +81,35 @@ double MainWindow::interpolate(double x) {
     return result;
 }
 
-
 // Returns Lagrange Polynomial function between points i and j using values stored in realFunc
-// TODO: caching
-std::function<double(double)> MainWindow::getLagrangePolynomial(size_t i, size_t j) {
+// TODO: checking realFunc vector's changes withoup copying
+std::function<double(double)> MainWindow::getLagrangePolynomial(std::pair<size_t, size_t> range) {
+    static std::map<std::pair<size_t, size_t>, std::function<double(double)>> cache;
+    static auto realFuncBackup = realFunc;
+    if (realFuncBackup != realFunc) {
+        realFuncBackup = realFunc;
+        cache.clear();
+    }
+    if (cache.count(range) != 0) {
+        return cache.at(range);
+    }
+    auto [i, j] = range;
     if (i > j) {
         std::swap(i, j);
     }
     auto const &func = realFunc;
     if (i == j) {
-        return [=](double) {
+        auto result = [=](double) {
             return func.at(i).second;
         };
+        cache[range] = result;
+        return result;
     } else {
-        return [=](double x) {
-            return 1.0 / (func.at(j).first - func.at(i).first) * ((x - func.at(i).first) * getLagrangePolynomial(i + 1, j)(x) - (x - func.at(j).first) * getLagrangePolynomial(i, j - 1)(x));
+        auto result = [=](double x) {
+            return 1.0 / (func.at(j).first - func.at(i).first) * ((x - func.at(i).first) * getLagrangePolynomial(std::make_pair(i + 1, j))(x) - (x - func.at(j).first) * getLagrangePolynomial(std::make_pair(i, j - 1))(x));
         };
+        cache[range] = result;
+        return result;
     }
 }
 

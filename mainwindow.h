@@ -31,7 +31,7 @@ private:
     void plot();
     void setSpinBoxBoundaries(double, double);
     double interpolate(double);
-    std::function<double(double)> getLagrangePolynomial(size_t, size_t);
+    std::function<double(double)> getLagrangePolynomial(std::pair<size_t, size_t>);
 };
 
 #endif // MAINWINDOW_H
