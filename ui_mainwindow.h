@@ -116,6 +116,7 @@ public:
         comboBox->addItem(QString());
         comboBox->addItem(QString());
         comboBox->addItem(QString());
+        comboBox->addItem(QString());
         comboBox->setObjectName(QString::fromUtf8("comboBox"));
 
         gridLayout->addWidget(comboBox, 1, 0, 1, 1);
@@ -182,10 +183,11 @@ public:
         comboBox->setItemText(4, QApplication::translate("MainWindow", "x*sin(x)", nullptr));
         comboBox->setItemText(5, QApplication::translate("MainWindow", "exp(x)", nullptr));
         comboBox->setItemText(6, QApplication::translate("MainWindow", "exp(x) / x", nullptr));
+        comboBox->setItemText(7, QApplication::translate("MainWindow", "2 * lg(x) - x/2 + 1", nullptr));
 
         pushButton_polynomial->setText(QApplication::translate("MainWindow", "Approximate", nullptr));
         label_polynomial_f->setText(QString());
-        label->setText(QApplication::translate("MainWindow", "Number of points", nullptr));
+        label->setText(QApplication::translate("MainWindow", "Number of intervals:", nullptr));
     } // retranslateUi
 
 };

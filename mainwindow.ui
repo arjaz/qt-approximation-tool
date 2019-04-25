@@ -115,6 +115,11 @@
           <string>exp(x) / x</string>
          </property>
         </item>
+        <item>
+         <property name="text">
+          <string>2 * lg(x) - x/2 + 1</string>
+         </property>
+        </item>
        </widget>
       </item>
       <item row="5" column="0">
@@ -134,7 +139,7 @@
       <item row="3" column="0">
        <widget class="QLabel" name="label">
         <property name="text">
-         <string>Number of points</string>
+         <string>Number of intervals:</string>
         </property>
        </widget>
       </item>
