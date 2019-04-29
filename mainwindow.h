@@ -26,6 +26,7 @@ private slots:
 
 private:
     Ui::MainWindow *ui;
+    bool isLagrangeCacheValid {true};
     std::function<double(double)> func;
     std::vector<std::pair<double, double>> functionValues;
     std::vector<std::pair<double, double>> generateFunction(std::function<double(double)>, std::pair<double, double>);

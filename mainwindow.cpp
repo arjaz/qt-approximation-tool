@@ -23,7 +23,7 @@ MainWindow::~MainWindow() {
     delete ui;
 }
 
-// Generates a vector of <double, double> pairs using the formula with x from min to max
+// Generates a vector of <double, double> pairs using the provided function with x within the range
 std::vector<std::pair<double, double>> MainWindow::generateFunction(std::function<double(double)> function, std::pair<double, double> range) {
     if (range.first > range.second) {
         throw std::invalid_argument("range.first must not be greater than range.second");
@@ -84,16 +84,15 @@ double MainWindow::interpolate(double x) {
     return result;
 }
 
-// Returns Lagrange Polynomial function between points i and j using values stored in functionValues
+// Returns Lagrange Polynomial function between points i and j within the range using values stored in functionValues
 // TODO: checking functionValues vector's changes withoup copying
 std::function<double(double)> MainWindow::getLagrangePolynomial(std::pair<size_t, size_t> range) {
     if (range.first > range.second) {
         throw std::invalid_argument("range.first must not be greater than range.second");
     }
     static std::map<std::pair<size_t, size_t>, std::function<double(double)>> cache;
-    static auto functionValuesBackup = functionValues;
-    if (functionValuesBackup != functionValues) {
-        functionValuesBackup = functionValues;
+    if (!isLagrangeCacheValid) {
+        isLagrangeCacheValid = true;
         cache.clear();
     }
     if (cache.count(range) != 0) {
@@ -123,6 +122,7 @@ void MainWindow::on_pushButton_polynomial_clicked(){
     auto range = std::make_pair(ui->doubleSpinBoxMinRange->value(), ui->doubleSpinBoxMaxRange->value());
 
     functionValues = generateFunction(func, range);
+    isLagrangeCacheValid = false;
 
     ui->label_real_f->setText(QString::number(func(ui->doubleSpinBoxPol->value()), 'f', 3));
     ui->label_polynomial_f->setText(QString::number(interpolate(ui->doubleSpinBoxPol->value()), 'f', 3));
@@ -223,6 +223,7 @@ void MainWindow::on_comboBox_currentIndexChanged(int index) {
                 return cos(x) * cos(x);
             };
     }
+    isLagrangeCacheValid = false;
 }
 
 void MainWindow::on_doubleSpinBoxMaxRange_valueChanged(double arg1) {
